@@ -104,6 +104,16 @@ extra:
         response_type: dict
         retries: 5
         url: https://api.coingecko.com/api/v3/simple/price
+    weatherstack_specs:
+      args:
+          api_id: weatherstack
+          headers: ${WEATHERSTACK_HEADERS:dict:{"Content-Type":"application/json"}}
+          method: GET
+          parameters: ${WEATHERSTACK_PARAMETERS:dict:{"access_key":"abc","query":"New York"}}
+          response_key: current
+          response_type: dict
+          retries: 5
+          url: https://api.weatherstack.com/current
 1:
   models:
     benchmark_tool:
@@ -161,6 +171,16 @@ extra:
         response_type: dict
         retries: 5
         url: https://api.coingecko.com/api/v3/simple/price
+    weatherstack_specs:
+      args:
+          api_id: weatherstack
+          headers: ${WEATHERSTACK_HEADERS:dict:{"Content-Type":"application/json"}}
+          method: GET
+          parameters: ${WEATHERSTACK_PARAMETERS:dict:{"access_key":"abc","query":"New York"}}
+          response_key: current
+          response_type: dict
+          retries: 5
+          url: https://api.weatherstack.com/current
 2:
   models:
     benchmark_tool:
@@ -218,6 +238,16 @@ extra:
         response_type: dict
         retries: 5
         url: https://api.coingecko.com/api/v3/simple/price
+    weatherstack_specs:
+      args:
+          api_id: weatherstack
+          headers: ${WEATHERSTACK_HEADERS:dict:{"Content-Type":"application/json"}}
+          method: GET
+          parameters: ${WEATHERSTACK_PARAMETERS:dict:{"access_key":"abc","query":"New York"}}
+          response_key: current
+          response_type: dict
+          retries: 5
+          url: https://api.weatherstack.com/current
 3:
   models:
     benchmark_tool:
@@ -275,6 +305,16 @@ extra:
         response_type: dict
         retries: 5
         url: https://api.coingecko.com/api/v3/simple/price
+    weatherstack_specs:
+      args:
+          api_id: weatherstack
+          headers: ${WEATHERSTACK_HEADERS:dict:{"Content-Type":"application/json"}}
+          method: GET
+          parameters: ${WEATHERSTACK_PARAMETERS:dict:{"access_key":"abc","query":"New York"}}
+          response_key: current
+          response_type: dict
+          retries: 5
+          url: https://api.weatherstack.com/current
 ---
 public_id: valory/ledger:0.19.0
 type: connection

@@ -147,6 +147,20 @@ models:
       retries: 5
       url: https://api.coingecko.com/api/v3/simple/price
     class_name: CoingeckoSpecs
+  weatherstack_specs:
+    args:
+      api_id: weatherstack
+      headers:
+        Accept: application/json
+      method: GET
+      parameters:
+        access_key: null
+        query: New York
+      response_key: current
+      response_type: dict
+      retries: 5
+      url: https://api.weatherstack.com/current
+    class_name: WeatherstackSpecs
   requests:
     args: {}
     class_name: Requests
