@@ -38,6 +38,7 @@ from packages.valory.skills.learning_abci.payloads import (
     DataPullPayload,
     DecisionMakingPayload,
     TxPreparationPayload,
+    WeatherDataPayload,
 )
 
 
@@ -103,7 +104,30 @@ class SynchronizedData(BaseSynchronizedData):
         """Get the round that submitted a tx to transaction_settlement_abci."""
         return str(self.db.get_strict("tx_submitter"))
 
+    @property
+    def temperature(self) -> Optional[float]:
+        """Get the temperature."""
+        return self.db.get("temperature", None)
 
+    @property
+    def humidity(self) -> Optional[int]:
+        """Get the humidity percentage."""
+        return self.db.get("humidity", None)
+
+    @property
+    def wind_speed(self) -> Optional[float]:
+        """Get the wind speed."""
+        return self.db.get("wind_speed", None)
+
+    @property
+    def weather_ipfs_hash(self) -> Optional[str]:
+        """Get the weather data IPFS hash."""
+        return self.db.get("weather_ipfs_hash", None)
+    
+    @property
+    def participant_to_weather_round(self) -> DeserializedCollection:
+        """Get the participants to the tx round."""
+        return self._get_deserialized("participant_to_weather_round")
 class DataPullRound(CollectSameUntilThresholdRound):
     """DataPullRound"""
 
@@ -127,6 +151,26 @@ class DataPullRound(CollectSameUntilThresholdRound):
     )
 
     # Event.ROUND_TIMEOUT  # this needs to be referenced for static checkers
+
+class WeatherDataRound(CollectSameUntilThresholdRound):
+    """Round for collecting weather data from WeatherStack API"""
+
+    payload_class = WeatherDataPayload
+    synchronized_data_class = SynchronizedData
+    done_event = Event.DONE
+    no_majority_event = Event.NO_MAJORITY
+    required_class_attributes = ()  # No additional attributes required
+
+    # Collection key for storing agent-to-payload mapping
+    collection_key = get_name(SynchronizedData.participant_to_weather_round)
+
+    # Selection keys for extracting specific fields
+    selection_key = (
+        get_name(SynchronizedData.temperature),
+        get_name(SynchronizedData.humidity),
+        get_name(SynchronizedData.wind_speed),
+        get_name(SynchronizedData.weather_ipfs_hash),
+    )
 
 
 class DecisionMakingRound(CollectSameUntilThresholdRound):
@@ -153,8 +197,6 @@ class DecisionMakingRound(CollectSameUntilThresholdRound):
         return None
 
     # Event.DONE, Event.ERROR, Event.TRANSACT, Event.ROUND_TIMEOUT  # this needs to be referenced for static checkers
-
-
 class TxPreparationRound(CollectSameUntilThresholdRound):
     """TxPreparationRound"""
 
@@ -191,6 +233,11 @@ class LearningAbciApp(AbciApp[Event]):
         DataPullRound: {
             Event.NO_MAJORITY: DataPullRound,
             Event.ROUND_TIMEOUT: DataPullRound,
+            Event.DONE: WeatherDataRound,
+        },
+        WeatherDataRound: {
+            Event.NO_MAJORITY: WeatherDataRound,
+            Event.ROUND_TIMEOUT: WeatherDataRound,
             Event.DONE: DecisionMakingRound,
         },
         DecisionMakingRound: {
@@ -215,7 +262,7 @@ class LearningAbciApp(AbciApp[Event]):
     event_to_timeout: EventToTimeout = {}
     cross_period_persisted_keys: FrozenSet[str] = frozenset()
     db_pre_conditions: Dict[AppState, Set[str]] = {
-        DataPullRound: set(),
+        DataPullRound: set()
     }
     db_post_conditions: Dict[AppState, Set[str]] = {
         FinishedDecisionMakingRound: set(),

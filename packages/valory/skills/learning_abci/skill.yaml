@@ -7,13 +7,13 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   __init__.py: bafybeiho3lkochqpmes4f235chq26oggmwnol3vjuvhosleoubbjirbwaq
-  behaviours.py: bafybeif4xzj46r2ws3n5gdfa7puk6exvpjsoyvwlm63wytn6r4hgiz2q6i
+  behaviours.py: bafybeidelarhq4j5omselmooatji5pguq7cffwxh54u36r5v5ygby3lcvi
   dialogues.py: bafybeifqjbumctlffx2xvpga2kcenezhe47qhksvgmaylyp5ypwqgfar5u
-  fsm_specification.yaml: bafybeigbbydxuqephdpatb3fp3sxnvr77bfvvo5hwjimxfpgyl32wupe64
+  fsm_specification.yaml: bafybeib67yzwvwye5rvrzhzlrps3rfnugtw2rnaxhvxd5gx22uy4tdafdq
   handlers.py: bafybeigjadr4thz6hfpfx5abezbwnqhbxmachf4efasrn4z2vqhsqgnyvi
-  models.py: bafybeicreffhurci7jzpwvxnlo5z3a2j3vcfgkopg2gtwwxfrncbzk77ra
-  payloads.py: bafybeidc6qqnfvd7qovjatt2i2kbga7pj6epdghlzqxdhzx6b6j6p7ubvm
-  rounds.py: bafybeic5dfzu7pirvqqdq2enzwh4mhtrg5n2cr5xa7luq2wh27rixl5aha
+  models.py: bafybeibqv6ybx3tbgqd2rltkv36fkq7seyvlvjcdubwa4hylwxxenkcoiu
+  payloads.py: bafybeiba6pbnx75r66g3cyqlbxlot6pzzzmzetel2ke5gbpqgmvzxjcda4
+  rounds.py: bafybeietvexeantv4hm2ukknlyqefsnqr5a72ppffq3h2c6udtbdvtcyry
 fingerprint_ignore_patterns: []
 connections: []
 contracts:
@@ -147,6 +147,20 @@ models:
       retries: 5
       url: https://api.coingecko.com/api/v3/simple/price
     class_name: CoingeckoSpecs
+  weatherstack_specs:
+    args:
+      api_id: weatherstack
+      headers:
+        Accept: application/json
+      method: GET
+      parameters:
+        access_key: null
+        query: New York
+      response_key: current
+      response_type: dict
+      retries: 5
+      url: https://api.weatherstack.com/current
+    class_name: WeatherstackSpecs
   requests:
     args: {}
     class_name: Requests
