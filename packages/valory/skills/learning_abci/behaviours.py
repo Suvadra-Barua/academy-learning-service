@@ -46,11 +46,13 @@ from packages.valory.skills.learning_abci.models import (
     CoingeckoSpecs,
     Params,
     SharedState,
+    WeatherstackSpecs,
 )
 from packages.valory.skills.learning_abci.payloads import (
     DataPullPayload,
     DecisionMakingPayload,
     TxPreparationPayload,
+    WeatherDataPayload,
 )
 from packages.valory.skills.learning_abci.rounds import (
     DataPullRound,
@@ -59,6 +61,7 @@ from packages.valory.skills.learning_abci.rounds import (
     LearningAbciApp,
     SynchronizedData,
     TxPreparationRound,
+    WeatherDataRound,
 )
 from packages.valory.skills.transaction_settlement_abci.payload_tools import (
     hash_payload_to_hex,
@@ -104,6 +107,11 @@ class LearningBaseBehaviour(BaseBehaviour, ABC):  # pylint: disable=too-many-anc
     def metadata_filepath(self) -> str:
         """Get the temporary filepath to the metadata."""
         return str(Path(mkdtemp()) / METADATA_FILENAME)
+    
+    @property
+    def weatherstack_specs(self) -> WeatherstackSpecs:
+        """Get the WeatherStack API specs."""
+        return self.context.weatherstack_specs
 
     def get_sync_timestamp(self) -> float:
         """Get the synchronized time from Tendermint's last block."""
@@ -278,7 +286,83 @@ class DataPullBehaviour(LearningBaseBehaviour):  # pylint: disable=too-many-ance
 
         return balance
 
+# behaviours.py
+class WeatherDataBehaviour(LearningBaseBehaviour):
+    """This behaviour pulls weather data from WeatherStack API and stores it in IPFS"""
 
+    matching_round: Type[AbstractRound] = WeatherDataRound
+
+    def async_act(self) -> Generator:
+        """Do the act, supporting asynchronous execution."""
+
+        with self.context.benchmark_tool.measure(self.behaviour_id).local():
+            sender = self.context.agent_address
+
+            # Get weather data using ApiSpecs
+            weather_data = yield from self.get_weather_data_specs()
+
+            # Store the weather data in IPFS
+            weather_ipfs_hash = yield from self.send_weather_to_ipfs(weather_data)
+
+            print(f"The fetched weather data: {weather_data}")
+            # Prepare the payload with Optional fields
+            payload = WeatherDataPayload(
+                sender=sender,
+                temperature=weather_data.get("temperature"),
+                humidity=weather_data.get("humidity"),
+                wind_speed=weather_data.get("wind_speed"),
+                weather_ipfs_hash=weather_ipfs_hash,
+            )
+
+        # Send the payload and wait for consensus
+        with self.context.benchmark_tool.measure(self.behaviour_id).consensus():
+            yield from self.send_a2a_transaction(payload)
+            yield from self.wait_until_round_end()
+
+        self.set_done()
+
+    def get_weather_data_specs(self) -> Generator[None, None, Optional[Dict]]:
+        """Get weather data from WeatherStack using ApiSpecs"""
+        
+        # Get the specs
+        specs = self.weatherstack_specs.get_spec()
+        
+        # Make the call
+        raw_response = yield from self.get_http_response(**specs)
+        
+        # Process the response
+        response = self.weatherstack_specs.process_response(raw_response)
+        
+        # Get the weather data
+        if response and "current" in response:
+            weather_data = {
+                "temperature": response["current"].get("temperature"),
+                "humidity": response["current"].get("humidity"),
+                "wind_speed": response["current"].get("wind_speed")
+            }
+            self.context.logger.info(f"Got weather data from WeatherStack: {weather_data}")
+            return weather_data
+        
+        self.context.logger.error("Failed to get weather data from WeatherStack")
+        return None
+
+    def send_weather_to_ipfs(self, weather) -> Generator[None, None, Optional[str]]:
+        try:
+            """Store the token price in IPFS"""
+            data = {"weather": weather}
+            weather_ipfs_hash = yield from self.send_to_ipfs(
+                filename=self.metadata_filepath, obj=data, filetype=SupportedFiletype.JSON
+            )
+            self.context.logger.info(
+                f"Weather data stored in IPFS: https://gateway.autonolas.tech/ipfs/{weather_ipfs_hash}"
+            )
+            return weather_ipfs_hash
+
+
+        except Exception as e:
+            self.context.logger.error(f"Error storing in IPFS: {str(e)}")
+            return None
+        
 class DecisionMakingBehaviour(
     LearningBaseBehaviour
 ):  # pylint: disable=too-many-ancestors
@@ -658,6 +742,7 @@ class LearningRoundBehaviour(AbstractRoundBehaviour):
     abci_app_cls = LearningAbciApp  # type: ignore
     behaviours: Set[Type[BaseBehaviour]] = [  # type: ignore
         DataPullBehaviour,
+        WeatherDataBehaviour,
         DecisionMakingBehaviour,
         TxPreparationBehaviour,
     ]

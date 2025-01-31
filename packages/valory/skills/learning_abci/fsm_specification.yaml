@@ -13,14 +13,18 @@ start_states:
 - DataPullRound
 states:
 - DataPullRound
+- WeatherDataRound
 - DecisionMakingRound
 - FinishedDecisionMakingRound
 - FinishedTxPreparationRound
 - TxPreparationRound
 transition_func:
-    (DataPullRound, DONE): DecisionMakingRound
+    (DataPullRound, DONE): WeatherDataRound
     (DataPullRound, NO_MAJORITY): DataPullRound
     (DataPullRound, ROUND_TIMEOUT): DataPullRound
+    (WeatherDataRound, DONE): DecisionMakingRound
+    (WeatherDataRound, NO_MAJORITY): WeatherDataRound
+    (WeatherDataRound, ROUND_TIMEOUT): WeatherDataRound
     (DecisionMakingRound, DONE): FinishedDecisionMakingRound
     (DecisionMakingRound, ERROR): FinishedDecisionMakingRound
     (DecisionMakingRound, NO_MAJORITY): DecisionMakingRound

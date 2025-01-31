@@ -28,6 +28,7 @@ states:
 - CheckTransactionHistoryRound
 - CollectSignatureRound
 - DataPullRound
+- WeatherDataRound
 - DecisionMakingRound
 - FinalizationRound
 - RandomnessTransactionSubmissionRound
@@ -57,9 +58,12 @@ transition_func:
     (CollectSignatureRound, DONE): FinalizationRound
     (CollectSignatureRound, NO_MAJORITY): ResetRound
     (CollectSignatureRound, ROUND_TIMEOUT): CollectSignatureRound
-    (DataPullRound, DONE): DecisionMakingRound
+    (DataPullRound, DONE): WeatherDataRound
     (DataPullRound, NO_MAJORITY): DataPullRound
     (DataPullRound, ROUND_TIMEOUT): DataPullRound
+    (WeatherDataRound, DONE): DecisionMakingRound
+    (WeatherDataRound, NO_MAJORITY): WeatherDataRound
+    (WeatherDataRound, ROUND_TIMEOUT): WeatherDataRound
     (DecisionMakingRound, DONE): ResetAndPauseRound
     (DecisionMakingRound, ERROR): ResetAndPauseRound
     (DecisionMakingRound, NO_MAJORITY): DecisionMakingRound

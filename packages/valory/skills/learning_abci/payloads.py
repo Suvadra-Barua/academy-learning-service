@@ -48,3 +48,12 @@ class TxPreparationPayload(BaseTxPayload):
 
     tx_submitter: Optional[str] = None
     tx_hash: Optional[str] = None
+
+@dataclass(frozen=True)
+class WeatherDataPayload(BaseTxPayload):
+    """Represent a transaction payload for the WeatherDataRound."""
+
+    temperature: Optional[float]
+    humidity: Optional[int]
+    wind_speed: Optional[float]
+    weather_ipfs_hash: Optional[str]
