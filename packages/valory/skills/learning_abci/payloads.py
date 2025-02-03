@@ -34,6 +34,12 @@ class DataPullPayload(BaseTxPayload):
     native_balance: Optional[float]
     erc20_balance: Optional[float]
 
+@dataclass(frozen=True)
+class NativeTransferPayload(BaseTxPayload):
+    """Represent a transaction payload for the NativeTransferRound."""
+
+    tx_submitter: Optional[str] = None
+    tx_hash: Optional[str] = None
 
 @dataclass(frozen=True)
 class DecisionMakingPayload(BaseTxPayload):
