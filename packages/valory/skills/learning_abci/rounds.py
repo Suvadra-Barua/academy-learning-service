@@ -37,6 +37,7 @@ from packages.valory.skills.abstract_round_abci.base import (
 from packages.valory.skills.learning_abci.payloads import (
     DataPullPayload,
     DecisionMakingPayload,
+    NativeTransferPayload,
     TxPreparationPayload,
 )
 
@@ -102,6 +103,11 @@ class SynchronizedData(BaseSynchronizedData):
     def tx_submitter(self) -> str:
         """Get the round that submitted a tx to transaction_settlement_abci."""
         return str(self.db.get_strict("tx_submitter"))
+    
+    @property
+    def native_transfer_tx_hash(self) -> Optional[float]:
+        """Get the token native_transfer_tx_hash."""
+        return self.db.get("native_transfer_tx_hash", None)
 
 
 class DataPullRound(CollectSameUntilThresholdRound):
@@ -128,6 +134,19 @@ class DataPullRound(CollectSameUntilThresholdRound):
 
     # Event.ROUND_TIMEOUT  # this needs to be referenced for static checkers
 
+class NativeTransferRound(CollectSameUntilThresholdRound):
+    """NativeTransferRound"""
+
+    payload_class = NativeTransferPayload
+    synchronized_data_class = SynchronizedData
+    done_event = Event.DONE
+    no_majority_event = Event.NO_MAJORITY
+    required_class_attributes = ()
+    collection_key = get_name(SynchronizedData.participant_to_tx_round)
+    selection_key = (
+        get_name(SynchronizedData.tx_submitter),
+        get_name(SynchronizedData.native_transfer_tx_hash),
+    )
 
 class DecisionMakingRound(CollectSameUntilThresholdRound):
     """DecisionMakingRound"""
@@ -203,6 +222,11 @@ class LearningAbciApp(AbciApp[Event]):
         TxPreparationRound: {
             Event.NO_MAJORITY: TxPreparationRound,
             Event.ROUND_TIMEOUT: TxPreparationRound,
+            Event.DONE: NativeTransferRound,
+        },
+        NativeTransferRound: {
+            Event.NO_MAJORITY: NativeTransferRound,
+            Event.ROUND_TIMEOUT: NativeTransferRound,
             Event.DONE: FinishedTxPreparationRound,
         },
         FinishedDecisionMakingRound: {},
