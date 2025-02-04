@@ -20,6 +20,7 @@ contracts:
 - valory/multisend:0.1.0:bafybeig5byt5urg2d2bsecufxe5ql7f4mezg3mekfleeh32nmuusx66p4y
 - valory/service_registry:0.1.0:bafybeidipx4cmchxdu5i2v67rno7muie7ckjhmasaj64tv2vtj4fveklxi
 - valory/erc20:0.1.0:bafybeifen3rx236w2u6snltkwn26pxbxaoyfdjlmatgm33u3dq4gwa63c4
+- valory/storage:0.1.0:bafybeiae4qyhuiwodn7kgypsf3rpv5ihpfrdfj7i56pyakphj2ivvx5imm
 protocols:
 - open_aea/signing:1.0.0:bafybeihv62fim3wl2bayavfcg3u5e5cxu3b7brtu4cn5xoxd6lqwachasi
 - valory/abci:0.1.0:bafybeiaqmp7kocbfdboksayeqhkbrynvlfzsx4uy4x6nohywnmaig4an7u
@@ -32,8 +33,8 @@ protocols:
 skills:
 - valory/abstract_abci:0.1.0:bafybeif2naoydlrqkdpnig34uejedwgurjwyvmbpcz53tif7pyukfdophq
 - valory/abstract_round_abci:0.1.0:bafybeigjddhk7epta7xpnfvv426xedff5abh4xlkwi6cqgp4vkutgkvydm
-- valory/learning_abci:0.1.0:bafybeihnsuuw2qnlq37fpxhhueasi2ty5ukqobhtdcwgjl52q6n574xusi
-- valory/learning_chained_abci:0.1.0:bafybeic7oyxlh4ceyy7zejxym2xu7zumdasglvruhmmch2weguf5zye4lq
+- valory/learning_abci:0.1.0:bafybeibhd2r6hmv3dxf6tykxz42kwf3ny3snkoi4timqotcpg4cb7jr4i4
+- valory/learning_chained_abci:0.1.0:bafybeicvzd64dkhpgrcmcu676ssynmvyxxfttn7z4rhtg4oehwdtko2t3i
 - valory/registration_abci:0.1.0:bafybeiagi6e2h7kochmlemy5c5yk6hwn37tfxiqvk2en74jhowsdwlmrny
 - valory/reset_pause_abci:0.1.0:bafybeiezfedmmseox3ce5aucxsiszdmvskrwwbtpb2a3vw3sbmc5jt7nri
 - valory/termination_abci:0.1.0:bafybeiea67epwwgngp7b3wavs6hpkaxv6etyaps6g6325bchfnf354mibq

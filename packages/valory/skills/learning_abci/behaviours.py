@@ -34,6 +34,7 @@ from packages.valory.contracts.multisend.contract import (
     MultiSendContract,
     MultiSendOperation,
 )
+from packages.valory.contracts.storage.contract import Storage
 from packages.valory.protocols.contract_api import ContractApiMessage
 from packages.valory.protocols.ledger_api import LedgerApiMessage
 from packages.valory.skills.abstract_round_abci.base import AbstractRound
@@ -141,6 +142,8 @@ class DataPullBehaviour(LearningBaseBehaviour):  # pylint: disable=too-many-ance
             # Get the token balance
             erc20_balance = yield from self.get_erc20_balance()
 
+            stored_number = yield from self.get_stored_number()
+
             # Prepare the payload to be shared with other agents
             # After consensus, all the agents will have the same price, price_ipfs_hash and balance variables in their synchronized data
             payload = DataPullPayload(
@@ -149,6 +152,7 @@ class DataPullBehaviour(LearningBaseBehaviour):  # pylint: disable=too-many-ance
                 price_ipfs_hash=price_ipfs_hash,
                 native_balance=native_balance,
                 erc20_balance=erc20_balance,
+                stored_number=stored_number
             )
 
         # Send the payload to all agents and mark the behaviour as done
@@ -251,6 +255,35 @@ class DataPullBehaviour(LearningBaseBehaviour):  # pylint: disable=too-many-ance
             f"Account {self.synchronized_data.safe_contract_address} has {balance} Olas"
         )
         return balance
+    
+    def get_stored_number(self) -> Generator[None, None, Optional[float]]:
+        """Get Stored Number"""
+        self.context.logger.info(
+            f"Getting Stored Number for Safe {self.synchronized_data.safe_contract_address}"
+        )
+
+        # Use the contract api to interact with the ERC20 contract
+        response_msg = yield from self.get_contract_api_response(
+            performative=ContractApiMessage.Performative.GET_RAW_TRANSACTION,  # type: ignore
+            contract_address=self.params.storage_address,
+            contract_id=str(Storage.contract_id),
+            contract_callable="get_stored_number",
+            chain_id=GNOSIS_CHAIN_ID,
+        )
+
+        # Check that the response is what we expect
+        if response_msg.performative != ContractApiMessage.Performative.RAW_TRANSACTION:
+            self.context.logger.error(
+                f"Error while retrieving the number: {response_msg}"
+            )
+            return None
+
+        number = response_msg.raw_transaction.body.get("number", None)
+
+        self.context.logger.info(
+            f"The stored number is {number}"
+        )
+        return number
 
     def get_native_balance(self) -> Generator[None, None, Optional[float]]:
         """Get the native balance"""
