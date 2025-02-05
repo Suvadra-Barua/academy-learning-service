@@ -19,7 +19,6 @@
 
 """This package contains round behaviours of LearningAbciApp."""
 
-from asyncio.windows_events import NULL
 import json
 from abc import ABC
 from pathlib import Path
@@ -564,6 +563,7 @@ class TxPreparationBehaviour(
             safe_tx_gas=SAFE_GAS,
             data=data,
             operation=operation,
+            to_address=to_address
         )
 
         self.context.logger.info(f"Safe transaction hash is {safe_tx_hash}")
