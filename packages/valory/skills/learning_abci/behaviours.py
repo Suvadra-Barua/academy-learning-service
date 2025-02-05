@@ -455,7 +455,7 @@ class TxPreparationBehaviour(
 
 
     def get_store_number_safe_tx_hash(self) -> Generator[None, None, Optional[str]]:
-        """Prepare an ERC20 safe transaction"""
+        """Prepare an store number transaction"""
 
         # Transaction data
         data_hex = yield from self.get_store_number_data()
@@ -466,7 +466,7 @@ class TxPreparationBehaviour(
 
         # Prepare safe transaction
         safe_tx_hash = yield from self._build_safe_tx_hash(
-            data=bytes.fromhex(data_hex)
+            to_address=self.params.transfer_target_address,data=bytes.fromhex(data_hex)
         )
 
         self.context.logger.info(f"The storing number's safe tx hash is {safe_tx_hash}")
@@ -483,7 +483,7 @@ class TxPreparationBehaviour(
             contract_address=self.params.storage_address,
             contract_id=str(Storage.contract_id),
             contract_callable="build_store_tx",
-            number=999,
+            number=9,
             chain_id=GNOSIS_CHAIN_ID,
         )
 
@@ -511,7 +511,7 @@ class TxPreparationBehaviour(
 
     def _build_safe_tx_hash(
         self,
-        # to_address: str = ,
+        to_address: str,
         value: int = ZERO_VALUE,
         data: bytes = EMPTY_CALL_DATA,
         operation: int = SafeOperation.CALL.value,
@@ -528,7 +528,7 @@ class TxPreparationBehaviour(
             contract_address=self.synchronized_data.safe_contract_address,
             contract_id=str(GnosisSafeContract.contract_id),
             contract_callable="get_raw_safe_transaction_hash",
-            # to_address=to_address,
+            to_address=to_address,
             value=value,
             data=data,
             safe_tx_gas=SAFE_GAS,
