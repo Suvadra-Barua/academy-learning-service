@@ -32,8 +32,8 @@ protocols:
 skills:
 - valory/abstract_abci:0.1.0:bafybeif2naoydlrqkdpnig34uejedwgurjwyvmbpcz53tif7pyukfdophq
 - valory/abstract_round_abci:0.1.0:bafybeigjddhk7epta7xpnfvv426xedff5abh4xlkwi6cqgp4vkutgkvydm
-- valory/learning_abci:0.1.0:bafybeihnsuuw2qnlq37fpxhhueasi2ty5ukqobhtdcwgjl52q6n574xusi
-- valory/learning_chained_abci:0.1.0:bafybeic7oyxlh4ceyy7zejxym2xu7zumdasglvruhmmch2weguf5zye4lq
+- valory/learning_abci:0.1.0:bafybeicsu4xodhwnhgohxsb27ybf3grugopvueyfeyjovandgts67a4r7m
+- valory/learning_chained_abci:0.1.0:bafybeih4rctc4llyotjfdgchrvqtrc3joourvbdkx25ru4c7rudbv2thpi
 - valory/registration_abci:0.1.0:bafybeiagi6e2h7kochmlemy5c5yk6hwn37tfxiqvk2en74jhowsdwlmrny
 - valory/reset_pause_abci:0.1.0:bafybeiezfedmmseox3ce5aucxsiszdmvskrwwbtpb2a3vw3sbmc5jt7nri
 - valory/termination_abci:0.1.0:bafybeiea67epwwgngp7b3wavs6hpkaxv6etyaps6g6325bchfnf354mibq
@@ -215,3 +215,13 @@ models:
       response_type: dict
       retries: 5
       url: https://api.coingecko.com/api/v3/simple/price
+  weatherstack_specs:
+    args:
+      api_id: weatherstack
+      headers: ${dict:{"Content-Type":"application/json"}}
+      method: GET
+      parameters: ${dict:{"access_key":"null","query":"New York"}}
+      response_key: current
+      response_type: dict
+      retries: 5
+      url: https://api.weatherstack.com/current

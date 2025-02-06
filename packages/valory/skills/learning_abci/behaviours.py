@@ -334,11 +334,11 @@ class WeatherDataBehaviour(LearningBaseBehaviour):
         response = self.weatherstack_specs.process_response(raw_response)
         
         # Get the weather data
-        if response and "current" in response:
+        if response:
             weather_data = {
-                "temperature": response["current"].get("temperature"),
-                "humidity": response["current"].get("humidity"),
-                "wind_speed": response["current"].get("wind_speed")
+                "temperature": response.get("temperature"),
+                "humidity": response.get("humidity"),
+                "wind_speed": response.get("wind_speed")
             }
             self.context.logger.info(f"Got weather data from WeatherStack: {weather_data}")
             return weather_data
