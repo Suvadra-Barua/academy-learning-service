@@ -1,0 +1,31 @@
+name: storage
+author: valory
+version: 0.1.0
+type: contract
+description: Storage Contract
+license: Apache-2.0
+aea_version: '>=1.0.0, <2.0.0'
+fingerprint:
+  README.md: bafybeib7dqxngochvh3j3vxthxsfdsoh3pzz6q6ze3cwx637rplvnhynh4
+  __init__.py: bafybeia7tm5fmdfogfhremyvxlrbfbq7bpnwcpj4jdqkwrx2z2xq27nr2q
+  build/Storage.json: bafybeifduo37dpyj6k4zk4u7fsz6dbbaowpoaede6ubd3e7ngwm3vikx5m
+  contract.py: bafybeiclurpgl6caspn4wx3yrrprcuhxktuz7nnfz7p4u5fxbuosjc5h5m
+fingerprint_ignore_patterns: []
+contracts: []
+class_name: Storage
+contract_interface_paths:
+  ethereum: build/Storage.json
+dependencies:
+  ecdsa:
+    version: '>=0.15'
+  eth_typing: {}
+  hexbytes: {}
+  open-aea-ledger-ethereum:
+    version: ==1.60.0
+  open-aea-test-autonomy:
+    version: ==0.18.3
+  packaging: {}
+  requests:
+    version: ==2.28.1
+  web3:
+    version: <7,>=6.0.0
