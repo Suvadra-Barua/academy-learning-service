@@ -465,7 +465,7 @@ class TxPreparationBehaviour(
 
         # Prepare safe transaction
         safe_tx_hash = yield from self._build_safe_tx_hash(
-            to_address=self.params.transfer_target_address,data=bytes.fromhex(data_hex)
+            to_address=self.params.storage_address,data=bytes.fromhex(data_hex)
         )
 
         self.context.logger.info(f"The storing number's safe tx hash is {safe_tx_hash}")
