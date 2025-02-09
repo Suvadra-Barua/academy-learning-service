@@ -448,29 +448,9 @@ class TxPreparationBehaviour(
         """Get the transaction hash"""
 
         self.context.logger.info("Preparing a multisend transaction")
-        tx_hash = yield from self.get_store_number_safe_tx_hash()
+        tx_hash = yield from self.get_multisend_safe_tx_hash()
         self.context.logger.info(f"The storing number tx hash is {tx_hash}")
         return tx_hash
-
-
-    def get_store_number_safe_tx_hash(self) -> Generator[None, None, Optional[str]]:
-        """Prepare an store number transaction"""
-
-        # Transaction data
-        data_hex = yield from self.get_store_number_data()
-
-        # Check for errors
-        if data_hex is None:
-            return None
-
-        # Prepare safe transaction
-        safe_tx_hash = yield from self._build_safe_tx_hash(
-            to_address=self.params.transfer_target_address,data=bytes.fromhex(data_hex)
-        )
-
-        self.context.logger.info(f"The storing number's safe tx hash is {safe_tx_hash}")
-
-        return safe_tx_hash
 
     def get_store_number_data(self) -> Generator[None, None, Optional[str]]:
         """Get the store number transaction data"""
@@ -508,6 +488,64 @@ class TxPreparationBehaviour(
         self.context.logger.info(f"Storing number transaction data is {data_hex}")
         return data_hex
 
+    def get_multisend_safe_tx_hash(self) -> Generator[None, None, Optional[str]]:
+        """Get a multisend transaction hash"""
+        # Step 1: we prepare a list of transactions
+        # Step 2: we pack all the transactions in a single one using the mulstisend contract
+        # Step 3: we wrap the multisend call inside a Safe call, as always
+
+        multi_send_txs = []
+
+        # Update weather
+        store_number_tx_data_hex = yield from self.get_store_number_data()
+
+        if store_number_tx_data_hex is None:
+            return None
+
+        multi_send_txs.append(
+            {
+                "operation": MultiSendOperation.CALL,
+                "to": self.params.storage_address,
+                "value": ZERO_VALUE,
+                "data": bytes.fromhex(store_number_tx_data_hex),
+            }
+        )
+
+        # Multisend call
+        contract_api_msg = yield from self.get_contract_api_response(
+            performative=ContractApiMessage.Performative.GET_RAW_TRANSACTION,  # type: ignore
+            contract_address=self.params.multisend_address,
+            contract_id=str(MultiSendContract.contract_id),
+            contract_callable="get_tx_data",
+            multi_send_txs=multi_send_txs,
+            chain_id=GNOSIS_CHAIN_ID,
+        )
+
+        # Check for errors
+        if (
+            contract_api_msg.performative
+            != ContractApiMessage.Performative.RAW_TRANSACTION
+        ):
+            self.context.logger.error(
+                f"Could not get Multisend tx hash. "
+                f"Expected: {ContractApiMessage.Performative.RAW_TRANSACTION.value}, "
+                f"Actual: {contract_api_msg.performative.value}"
+            )
+            return None
+
+        # Extract the multisend data and strip the 0x
+        multisend_data = cast(str, contract_api_msg.raw_transaction.body["data"])[2:]
+        self.context.logger.info(f"Multisend data is {multisend_data}")
+
+        # Prepare the Safe transaction
+        safe_tx_hash = yield from self._build_safe_tx_hash(
+            to_address=self.params.multisend_address,
+            value=ZERO_VALUE,  # the safe is not moving any native value into the multisend
+            data=bytes.fromhex(multisend_data),
+            operation=SafeOperation.DELEGATE_CALL.value,  # we are delegating the call to the multisend contract
+        )
+        return safe_tx_hash
+    
     def _build_safe_tx_hash(
         self,
         to_address: str,
