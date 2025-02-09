@@ -7,18 +7,19 @@ license: Apache-2.0
 aea_version: '>=1.0.0, <2.0.0'
 fingerprint:
   __init__.py: bafybeiho3lkochqpmes4f235chq26oggmwnol3vjuvhosleoubbjirbwaq
-  behaviours.py: bafybeif4xzj46r2ws3n5gdfa7puk6exvpjsoyvwlm63wytn6r4hgiz2q6i
+  behaviours.py: bafybeid3liqvmw7urcfns4eww4k3imkwmgrqs5avuyvsnid457xey7ctoq
   dialogues.py: bafybeifqjbumctlffx2xvpga2kcenezhe47qhksvgmaylyp5ypwqgfar5u
   fsm_specification.yaml: bafybeigbbydxuqephdpatb3fp3sxnvr77bfvvo5hwjimxfpgyl32wupe64
   handlers.py: bafybeigjadr4thz6hfpfx5abezbwnqhbxmachf4efasrn4z2vqhsqgnyvi
-  models.py: bafybeicreffhurci7jzpwvxnlo5z3a2j3vcfgkopg2gtwwxfrncbzk77ra
-  payloads.py: bafybeidc6qqnfvd7qovjatt2i2kbga7pj6epdghlzqxdhzx6b6j6p7ubvm
-  rounds.py: bafybeic5dfzu7pirvqqdq2enzwh4mhtrg5n2cr5xa7luq2wh27rixl5aha
+  models.py: bafybeicjdfxuo65iwnbv3edzlhzrr6k5wlcfqzy65liacon6xh7bxdrkmy
+  payloads.py: bafybeifng3wqbdo2osfrqiikh2fhlhipllql4gmllhrc3bbd4lwsp5amc4
+  rounds.py: bafybeibszln2tmv2o4yahxmnww5d72wy5yzkhckaas5jsycss2kxkroud4
 fingerprint_ignore_patterns: []
 connections: []
 contracts:
 - valory/gnosis_safe:0.1.0:bafybeihtqcpqthb37msgqabpzcc2xc3l3yzkp5pl2sodeghqyzzzyuevgi
 - valory/erc20:0.1.0:bafybeifen3rx236w2u6snltkwn26pxbxaoyfdjlmatgm33u3dq4gwa63c4
+- valory/storage:0.1.0:bafybeidnml27p6n4xywnhjfd6o6st3whjfbocvs2z4azqorqj3jg55squy
 - valory/multisend:0.1.0:bafybeig5byt5urg2d2bsecufxe5ql7f4mezg3mekfleeh32nmuusx66p4y
 protocols:
 - valory/contract_api:1.0.0:bafybeidgu7o5llh26xp3u3ebq3yluull5lupiyeu6iooi2xyymdrgnzq5i
@@ -130,6 +131,7 @@ models:
       coingecko_api_key: null
       transfer_target_address: '0x0000000000000000000000000000000000000000'
       olas_token_address: '0xcE11e14225575945b8E6Dc0D4F2dD4C570f79d9f'
+      storage_address: '0x704a80a529969bbffc7fbb53c73438e5ddc99832'
       multisend_address: '0xA238CBeb142c10Ef7Ad8442C6D1f9E89e07e7761'
     class_name: Params
   coingecko_specs:
